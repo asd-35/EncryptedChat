@@ -1,4 +1,6 @@
 const express = require("express");
+var CryptoJS = require("crypto-js");
+
 
 app = express();
 app.use(express.static("public"));
@@ -13,3 +15,13 @@ console.log("live on 3000")
 app.get("/", (req,res) => {
 	res.render("homepage")
 	});
+
+app.get("/chat", (req,res) => {
+	res.render("chat")
+	//console.log(CryptoJS.SHA256("seed").toString(CryptoJS.enc.Hex))
+	// SHA-256 will use later
+	});
+
+app.use((req,res) => {
+	res.status(404).render("404");
+});
