@@ -22,6 +22,11 @@ app.get("/chat", (req,res) => {
 	// SHA-256 will use later
 	});
 
+app.get("/login", (req,res) => {
+	res.render("login")
+	
+	});
+
 app.use((req,res) => {
 	res.status(404).render("404");
 });
