@@ -20,10 +20,11 @@
         <br><br>
         <button name="log" id="log" >Log In Here</button>
         <br><br>
-        <input type="checkbox" id="check">
-        <span>Remember me</span>
-        <br><br>
-        <a href="#">Forgot Password</a>
+        <% if(isLogged[0].value == 0){ %>
+        <p></p>
+     <%}else{%>
+     <p style="color:red;">Invalid credentials</p>
+    <%} %>
     </form>
 </div>
 </body>

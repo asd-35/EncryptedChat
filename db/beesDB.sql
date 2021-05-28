@@ -31,3 +31,6 @@ CREATE TABLE Receivers (
     FOREIGN KEY (text_id) REFERENCES Chat_Log(text_id),
     FOREIGN KEY (receiver_id) REFERENCES Users(user_id)
 ); 
+
+INSERT INTO Users (user_id, username, user_password)
+VALUES (1,"example@bees.com","6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b");
