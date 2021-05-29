@@ -45,37 +45,46 @@ const requireAuth = (req,res,next) => {
 	}
 }
 
+
 app.set("view engine","ejs");
 
 app.listen(3000);
 
 console.log("live on 3000")
 
-app.get("/", (req,res) => {
+app.get("/",(req,res) => {
+	const token = req.cookies["session-token"]
+	if(token){
+		res.redirect("/chat");
+	}else{
+		res.render("homepage")
+	}
+	});
+app.post("/",(req,res) => {
 	
-	res.render("homepage")
+	res.redirect("/login")
 	});
 
-app.post("/", (req,res) => {
-	
-	res.redirect("/login");
-});
-
-app.get("/chat",requireAuth ,(req,res) => {
+app.get("/chat",requireAuth,(req,res) => {
 	res.render("chat")
 	
 	
 	});
 
-app.get("/login", (req,res) => {
-	res.render("login",{isLogged: [
+app.get("/login",(req,res) => {
+	const token = req.cookies["session-token"]
+	if(token){
+		res.redirect("/chat")
+	}else{
+		res.render("login",{isLogged: [
 		{
 			value: 0
 		}]})
+	}
 	
 	});
 
-app.post("/login", (req,res) => {
+app.post("/login",(req,res) => {
 	
 
 	var pass = CryptoJS.SHA256(req.body.pass).toString(CryptoJS.enc.Hex);
@@ -85,7 +94,7 @@ app.post("/login", (req,res) => {
   function(err, results, fields) {
     if(results != 0){
     	const token = createToken(user);
-    	res.cookie("session-token",token,{httpOnly: true, maxAge: time * 1000})
+    	res.cookie("session-token",token,{ maxAge: time * 1000})
     	res.redirect("chat");
     	
     }else{
