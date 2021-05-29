@@ -1,10 +1,21 @@
 const express = require("express");
+
+app = express();
+
+const url = require('url');    
 const CryptoJS = require("crypto-js");
 const mysql = require('mysql2');
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const http = require('http').Server(app);
+const io = require("socket.io")(http);
 
-app = express();
+http.listen(3000, () => {
+	console.log("alive")
+})
+
+
+
 app.use(express.static("public"));
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser())
@@ -48,14 +59,14 @@ const requireAuth = (req,res,next) => {
 
 app.set("view engine","ejs");
 
-app.listen(3000);
 
-console.log("live on 3000")
+
+
 
 app.get("/",(req,res) => {
 	const token = req.cookies["session-token"]
 	if(token){
-		res.redirect("/chat");
+		res.redirect("/chatroom");
 	}else{
 		res.render("homepage")
 	}
@@ -65,8 +76,14 @@ app.post("/",(req,res) => {
 	res.redirect("/login")
 	});
 
-app.get("/chat",requireAuth,(req,res) => {
-	res.render("chat")
+app.get("/chatroom",requireAuth,(req,res) => {
+	res.render("chatroom")
+	
+	
+	});
+app.post("/chatroom",requireAuth,(req,res) => {
+	res.cookie("session-token","",{ maxAge: 1 })
+	res.redirect("/")
 	
 	
 	});
@@ -95,7 +112,7 @@ app.post("/login",(req,res) => {
     if(results != 0){
     	const token = createToken(user);
     	res.cookie("session-token",token,{ maxAge: time * 1000})
-    	res.redirect("chat");
+    	res.redirect("chatroom");
     	
     }else{
     	res.render("login",{isLogged: [
@@ -107,6 +124,14 @@ app.post("/login",(req,res) => {
   }
 );
 	});
+
+//io.on("connection",(socket) =>{
+//		//console.log("user " + socket.id);
+//		socket.on("status",(data) =>{
+//			
+//			io.emit("status",data)
+//		})
+//	})
 
 app.use((req,res) => {
 	res.status(404).render("404");
