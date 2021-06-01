@@ -5,30 +5,91 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-  <ul id="status"></ul>
-  <form id="login" method="POST" action="/chatroom">
-    <button name="logout" id="logout" >Logout</button>
 
+  <div>
+  <div style="float:right; ">
+  <form id="login" method="POST" action="/chatroom">
+    <button  style=" background-color: #1844d4;
+    right: 0;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;" name="logout" id="logout">Logout</button>
   </form>
   
+  <ul id="users">
+  
+  </ul>
+  </div>
+  <div style="float:left;">
+    <h2 id="user">User: <%= user[0].Fname %>
+      <%= user[0].Lname %> , Mail: <%= user[0].mail %></h2>
+  </div>
+  <div style="float:left;" >
+  <form id="create" method="POST" action="/chatroom">
+    <input style="
+  width: 100%;
+  border: 3px solid #1844d4;" type="text" name="createin" id="createin" placeholder="Add users by their email example: email,email ...">
+    <button style=" background-color: #1844d4;
+      right: 0;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;" name="createBut" id="createBut">Create a room</button>
+  </form>
+  </div>
+  
+    <% if(user.length> 0) { %>
+    
+      <% user.forEach (room=> { %>
+          <% room.rooms.forEach (belong=> { %>
+              <div style="
+                        float: left;
+                        width: 60%;
+                        border: 5px solid  #1844d4;
+                        padding: 10px;">
+                
+                
+              <a href="/chat/<%= belong.room_name%>"><%= belong.room_name%></a>
+               
+              
+              </div>
+            <% }) %>
+              <% }) %>
+                <% } %>
 
-
+  
+  </div>
   <script>
     
+    const socket = io("http://localhost:3000")
+    
+    
+    socket.on("connection")
+   
+    const user = document.getElementById("user")
+    const users = document.getElementById("users")
+    socket.emit("new-user",user.innerHTML)
+    
+    socket.on("new-user", (data) => {
+      var newUser = document.createElement("li")
+      newUser.setAttribute("id", data.replace("User:", "").replace("Mail:","").replace(",", ""))
+      newUser.innerHTML = data.replace("User:","").replace("Mail:", "").replace(",", "")
+      users.appendChild(newUser)
 
+    })
     
     
-    //socket.on("connection")
-    
-    //socket.on("status", (data) => {
-    //  var status = document.getElementById("status");
-    //  var userStatus = document.createElement("li")
-    //  userStatus.innerHTML = data;
-    //  status.appendChild(userStatus)
-    //})
-    
-
-    //socket.emit("status","online")
   </script>
 </body>
 </html>

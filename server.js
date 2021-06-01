@@ -9,6 +9,8 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const http = require('http').Server(app);
 const io = require("socket.io")(http);
+const jwt_decode = require('jwt-decode');
+const { disconnect } = require("process");
 
 http.listen(3000, () => {
 	console.log("alive")
@@ -32,8 +34,8 @@ const secret = "fb2eb10425b3816df517314443c0d98f487779ce02f4440baee81286484e0962
 //secret created by crypto.randomBytes(64).toString(hex)
 const time = 3 * 24 * 60 * 60;
 
-const createToken = (mail) => {
-	return jwt.sign({ mail }, secret,
+const createToken = (user) => {
+	return jwt.sign({ user }, secret,
 		{
 			expiresIn: time
 		})
@@ -48,6 +50,7 @@ const requireAuth = (req,res,next) => {
 			if(err){
 				res.redirect("/login");
 			}else{
+				
 				next();
 			}
 		})
@@ -77,16 +80,42 @@ app.post("/",(req,res) => {
 	});
 
 app.get("/chatroom",requireAuth,(req,res) => {
-	res.render("chatroom")
-	
+	const token = req.cookies["session-token"]
+	var decoded = jwt_decode(token);
+	connection.query('SELECT * FROM Rooms WHERE mail = "'+ decoded.user.mail +'"',function(err, results) {
+   
+	res.render("chatroom",{user : [{
+		Fname: decoded.user.Fname,
+		Lname: decoded.user.Lname,
+		mail: decoded.user.mail,
+		rooms: results
+	}]
+	})
+	})
 	
 	});
 app.post("/chatroom",requireAuth,(req,res) => {
-	res.cookie("session-token","",{ maxAge: 1 })
-	res.redirect("/")
-	
+	var newRoom = req.body.createin
+	if(newRoom != null) newRoom = newRoom.split(",")
+	var room_id = require("crypto").randomBytes(6).toString("hex")
+	if(newRoom != null){
+		for(var i = 0; i < newRoom.length; i++){
+			
+			var sql = "INSERT INTO Rooms (mail,room_name) VALUES ('"+newRoom[i]+"','"+room_id+"');";
+  			connection.query(sql, function (err, result) {
+    		if (err) throw err;
+    		
+  		});
+		}
+		res.redirect("chatroom")
+	}else{
+		res.cookie("session-token","",{ maxAge: 1 })
+		res.redirect("/")
+	}
 	
 	});
+
+	
 
 app.get("/chat",requireAuth,(req,res) => {
 	res.render("chat")
@@ -113,10 +142,15 @@ app.post("/login",(req,res) => {
 	var pass = CryptoJS.SHA256(req.body.pass).toString(CryptoJS.enc.Hex);
 	var user = req.body.mail;
 	connection.query(
-  'SELECT * FROM Users WHERE username = "'+ user +'" AND user_password = "' + pass + '"',
-  function(err, results, fields) {
+  'SELECT * FROM Users WHERE mail = "'+ user +'" AND user_password = "' + pass + '"',
+  function(err, results,fields) {
     if(results != 0){
-    	const token = createToken(user);
+    	
+		const token = createToken({
+			Fname:	results[0].Fname,
+			Lname:	results[0].Lname,
+			mail: 	results[0].mail
+		});
     	res.cookie("session-token",token,{ maxAge: time * 1000})
     	res.redirect("chatroom");
     	
@@ -131,12 +165,21 @@ app.post("/login",(req,res) => {
 );
 	});
 
+
+
+
 io.on("connection",(socket) =>{
 	console.log(socket.id)
 
 	socket.on("message", (data) => {
 		io.emit("message",data)
-	})		
+	})
+	socket.on("new-user",(data) => {
+		
+		io.emit("new-user",data)
+	})
+
+	
 })
 
 app.use((req,res) => {
