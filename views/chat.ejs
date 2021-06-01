@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Chat</title>
+	<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+
+</head>
+<body>
+
+	<input type="text" id="message" style="position: fixed;
+  bottom: 0;
+  width: 50%;
+  border: 3px solid #8AC007;">
+	
+	<button onclick="sendMessage()" style="position: fixed;
+	bottom:0;
+	right: 0px;
+	background-color: #4CAF50;
+	border: none;
+	color: white;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;">Send</button>
+	
+	<div id="message-con">
+
+	</div>
+	
+	<script>
+		const socket = io("http://localhost:3000")
+		
+		socket.on("connection")
+		
+		socket.on("message",(data) => {
+			var messageSent = document.createElement("p")
+			messageSent.innerHTML = data
+
+			document.getElementById("message-con").appendChild(messageSent)
+		})
+		
+		const sendMessage = () => {
+			const messageInput = document.getElementById("message")
+			socket.emit("message", messageInput.value)
+		}
+	</script>
+</body>
+</html>

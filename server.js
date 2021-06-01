@@ -88,6 +88,12 @@ app.post("/chatroom",requireAuth,(req,res) => {
 	
 	});
 
+app.get("/chat",requireAuth,(req,res) => {
+	res.render("chat")
+
+	
+	});
+
 app.get("/login",(req,res) => {
 	const token = req.cookies["session-token"]
 	if(token){
@@ -125,13 +131,13 @@ app.post("/login",(req,res) => {
 );
 	});
 
-//io.on("connection",(socket) =>{
-//		//console.log("user " + socket.id);
-//		socket.on("status",(data) =>{
-//			
-//			io.emit("status",data)
-//		})
-//	})
+io.on("connection",(socket) =>{
+	console.log(socket.id)
+
+	socket.on("message", (data) => {
+		io.emit("message",data)
+	})		
+})
 
 app.use((req,res) => {
 	res.status(404).render("404");
