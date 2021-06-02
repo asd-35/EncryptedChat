@@ -11,13 +11,9 @@ CREATE TABLE Users (
     PRIMARY KEY (user_id)
 );
 
-CREATE TABLE Chat_Log (
-    text_id int NOT NULL,
+CREATE TABLE  ROOM_ID(
+    text_id int NOT NULL AUTO_INCREMENT,
     text_msg varchar(255),
-    sender_id int,
-    text_date datetime,
-    PRIMARY KEY (text_id),
-    FOREIGN KEY (sender_id) REFERENCES Users(user_id)
 );
 
 CREATE TABLE Rooms (

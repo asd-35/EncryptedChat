@@ -9,7 +9,9 @@
 
 </head>
 <body>
-
+	<h1> <%= chatuser[0].room_id %> 
+	</h1>
+	<hr>
 	<input type="text" id="message" style="position: fixed;
   bottom: 0;
   width: 50%;
@@ -29,7 +31,7 @@
 	margin: 4px 2px;
 	cursor: pointer;">Send</button>
 	
-	<div id="message-con">
+	<div id="message-con" >
 
 	</div>
 	
@@ -47,7 +49,7 @@
 		
 		const sendMessage = () => {
 			const messageInput = document.getElementById("message")
-			socket.emit("message", messageInput.value)
+			socket.emit("message", "<%= chatuser[0].Fname %>" + " " + "<%= chatuser[0].Lname %> :" + messageInput.value)
 		}
 	</script>
 </body>

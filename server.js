@@ -107,6 +107,11 @@ app.post("/chatroom",requireAuth,(req,res) => {
     		
   		});
 		}
+		var sql = "CREATE TABLE " + room_id +" (text_id int NOT NULL AUTO_INCREMENT,text_msg varchar(255), PRIMARY KEY (text_id));";
+  			connection.query(sql, function (err, result) {
+    		if (err) throw err;
+    		
+  		});
 		res.redirect("chatroom")
 	}else{
 		res.cookie("session-token","",{ maxAge: 1 })
@@ -117,8 +122,17 @@ app.post("/chatroom",requireAuth,(req,res) => {
 
 	
 
-app.get("/chat",requireAuth,(req,res) => {
-	res.render("chat")
+app.get("/chat/:id",requireAuth,(req,res) => {
+	const token = req.cookies["session-token"]
+	var decoded = jwt_decode(token);
+	var room = req.params.id
+	res.render("chat",{chatuser: [
+		{
+			Fname: decoded.user.Fname,
+			Lname: decoded.user.Lname,
+			room_id: room
+		}
+	]})
 
 	
 	});
@@ -172,6 +186,7 @@ io.on("connection",(socket) =>{
 	console.log(socket.id)
 
 	socket.on("message", (data) => {
+		
 		io.emit("message",data)
 	})
 	socket.on("new-user",(data) => {
