@@ -12,15 +12,17 @@
 	<h1> <%= chatuser[0].room_id %> 
 	</h1>
 	<hr>
+	
 	<input type="text" id="message" style="position: fixed;
   bottom: 0;
+  right: 150px;
   width: 50%;
   border: 3px solid  #1844d4;">
 	
 	<button onclick="sendMessage()" style="position: fixed;
 	bottom:0;
 	right: 0px;
-	background-color: #4CAF50;
+	background-color: #1844d4;
 	border: none;
 	color: white;
 	padding: 15px 32px;
@@ -31,6 +33,13 @@
 	margin: 4px 2px;
 	cursor: pointer;">Send</button>
 	
+	<% if(chatuser[0].prev_chat.length> 0) { %>
+		<%chatuser[0].prev_chat.forEach ( chats => { %>
+			<p> <%= chats.text_msg %> </p>
+
+			<% }) %>
+		<% } %>
+
 	<div id="message-con" >
 
 	</div>
@@ -49,7 +58,7 @@
 		
 		const sendMessage = () => {
 			const messageInput = document.getElementById("message")
-			socket.emit("message", "<%= chatuser[0].Fname %>" + " " + "<%= chatuser[0].Lname %> :" + messageInput.value)
+			socket.emit("message", "<%= chatuser[0].room_id %>," + "<%= chatuser[0].Fname %>," + "<%= chatuser[0].Lname %>," + messageInput.value)
 		}
 	</script>
 </body>

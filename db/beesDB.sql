@@ -14,13 +14,13 @@ CREATE TABLE Users (
 CREATE TABLE  ROOM_ID(
     text_id int NOT NULL AUTO_INCREMENT,
     text_msg varchar(255),
+    PRIMARY KEY (text_msg)
 );
 
 CREATE TABLE Rooms (
-    room_id int NOT NULL AUTO_INCREMENT,
     mail varchar(255) NOT NULL,
-    room_name varchar(255) NOT NULL, 
-    PRIMARY KEY (room_id)
+    room_name varchar(255) NOT NULL
+    
 ); 
 
 CREATE TABLE Receivers (
@@ -39,3 +39,4 @@ VALUES (3,"Taylor","Hello","taylor@bees.com","6b86b273ff34fce19d6b804eff5a3f5747
 
 INSERT INTO Rooms (mail,room_name)
 VALUES (,);
+INSERT INTO ROOM_ID (text_msg) VALUES(text_msg);
