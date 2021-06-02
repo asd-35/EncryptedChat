@@ -82,7 +82,8 @@ app.post("/",(req,res) => {
 app.get("/chatroom",requireAuth,(req,res) => {
 	const token = req.cookies["session-token"]
 	var decoded = jwt_decode(token);
-	connection.query('SELECT * FROM Rooms WHERE mail = "'+ decoded.user.mail +'"',function(err, results) {
+	if(decoded.user.Fname == "Super"){
+		connection.query('SELECT room_name FROM Rooms group by room_name;' ,function(err, results) {
    
 	res.render("chatroom",{user : [{
 		Fname: decoded.user.Fname,
@@ -92,6 +93,20 @@ app.get("/chatroom",requireAuth,(req,res) => {
 	}]
 	})
 	})
+	}else{
+		connection.query('SELECT * FROM Rooms WHERE mail = "'+ decoded.user.mail +'"',function(err, results) {
+   
+	res.render("chatroom",{user : [{
+		Fname: decoded.user.Fname,
+		Lname: decoded.user.Lname,
+		mail: decoded.user.mail,
+		rooms: results
+	}]
+	})
+	})
+	}
+
+	
 	
 	});
 app.post("/chatroom",requireAuth,(req,res) => {
@@ -206,8 +221,12 @@ io.on("connection",(socket) =>{
 		io.emit("message",messageFormatted)
 	})
 	socket.on("new-user",(data) => {
+		if(data == "User: Super User , Mail: superuser"){
+
+		}else{
+			io.emit("new-user",data)
+		}
 		
-		io.emit("new-user",data)
 	})
 
 	

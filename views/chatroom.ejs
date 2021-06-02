@@ -21,14 +21,13 @@
     margin: 4px 2px;
     cursor: pointer;" name="logout" id="logout">Logout</button>
   </form>
-  
+  <h2> ONLINE STATUS</h2>
   <ul id="users">
   
   </ul>
   </div>
   <div style="float:left;">
-    <h2 id="user">User: <%= user[0].Fname %>
-      <%= user[0].Lname %> , Mail: <%= user[0].mail %></h2>
+    <h2 id="user">User: <%= user[0].Fname %> <%= user[0].Lname %> , Mail: <%= user[0].mail %></h2>
   </div>
   <div style="float:left;" >
   <form id="create" method="POST" action="/chatroom">
@@ -47,6 +46,7 @@
       margin: 4px 2px;
       cursor: pointer;" name="createBut" id="createBut">Create a room</button>
   </form>
+  
   </div>
   
     <% if(user.length > 0) { %>
@@ -77,9 +77,12 @@
     
     socket.on("connection")
    
-    const user = document.getElementById("user")
+    var user = document.getElementById("user")
     const users = document.getElementById("users")
-    socket.emit("new-user",user.innerHTML)
+    socket.emit("new-user", user.innerHTML)
+    
+   
+    
     
     socket.on("new-user", (data) => {
       var newUser = document.createElement("li")
@@ -88,6 +91,16 @@
       users.appendChild(newUser)
 
     })
+
+    function checkSuper(str1,str2) {
+        var str = str1;
+        var n = str1.indexOf(str2);
+        if(n != -1){
+          return false;
+        }else{
+          return true;
+        }
+      }
     
     
   </script>
